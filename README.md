@@ -6,9 +6,10 @@ Takes a pre-defined list, i.e. Nasdaq OMX, and ranks the stocks according to Rel
 The top candidates and shows in the Money wave:
 - under 20 get ready to buy
 - over 80 get ready to sell
+
 ===
 Pulls the data from Yahoo! Finance
-Calculates the values
+Calculate predefined values used to define candidates with associated probability
 Shows the candidates as a webpage using Flask
 
 
