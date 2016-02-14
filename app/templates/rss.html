@@ -1,0 +1,15 @@
+<table>
+	{% set i = 1 %}
+	{% for row in feed.entries %}
+	<tr>
+		<td>{{ i }}</td>	
+		<td><a href="{{ row.link }}">{{ row.title }}</a></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>{{ row.pubDate }}</td>
+	</tr>
+		{% set i = i+1 %}
+        {% endfor %}
+</table>
+

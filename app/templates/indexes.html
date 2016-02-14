@@ -1,0 +1,66 @@
+<h4>List of indexes ordered by SCTR</h4>
+
+<table  class="table table-condensed">
+<thead>
+	<th>Index</th>
+	<th></th>
+	<th></th>
+	<th></th>
+</thead>
+{% for u in indexes %}
+	{% if u.average != None %}
+		{% set tdwidth = 100 %}
+		<tr class = "warning">
+			<td width=tdwidth>Name:</td>
+			<td width=tdwidth><a href="{{ url_for('grapher', ticker = u.ticker)}}"><b>{{ u.name }}</b></a></td>
+			{% set priceChange = (((u.price/u.lastPrice)-1)*100) %}
+			<td  width=tdwidth class = "warning">Change</td>
+			<td width=tdwidth class = "warning">
+			{% if priceChange < 0 %}
+				<p class = "text-danger">
+			{% elif priceChange > 0 %}
+				<p class = "text-success">
+			{% else %}
+				<p>
+			{% endif %}
+			{{ '%0.2f' % priceChange }} %</p></td>
+		</tr>
+		<tr>
+		{% if u.average > 0 %}
+			{% set buyAction  = "success" %}
+		{% elif u.average < 0 %}
+			{% set buyAction = "danger" %}
+		{% else %}
+			{% set buyAction = "info" %}
+		{% endif %}
+			<td width=tdwidth class = {{ buyAction }}>SCTR:</td>
+			<td width=tdwidth class = {{ buyAction }}>{{ '%0.2f' % u.average }}</td>
+			{% if u.emaLTvsST %}
+	                        {% set buyAction  = "success" %}
+			{% else %}
+        	                {% set buyAction = "danger" %}
+			{% endif %}
+			<td width=tdwidth class = {{ buyAction }}>Long term trend</td>
+			<td width=tdwidth class = {{ buyAction }}>
+			{% if u.emaLTvsST %}
+				<img src="/static/img/arrow_up.gif" style = "width:15px;height:20px;">
+			{% else %}
+				<img src="/static/img/arrow_down.gif" style = "width:15px;height:20px;">
+			{% endif %}
+			</td>
+		</tr>
+		<tr>
+			{% if u.moneywave < 20 %}
+                        	{% set buyAction  = "success" %}
+			{% elif u.moneywave > 80 %}
+				{% set buyAction = "danger" %}
+			{% else %}
+				{% set buyAction = "info" %}
+			{% endif %}
+			<td width=tdwidth class = {{ buyAction }}>Money Wave</td>
+			<td width=tdwidth class = {{ buyAction }}>{{ '%0.2f' % u.moneywave }}</td>
+			<td width=tdwidth></td><td width=tdwidth></td>
+		</tr>
+	{% endif %}
+{% endfor %}
+</table>
