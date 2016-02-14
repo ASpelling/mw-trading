@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+{% block content %}
+	<h4>List of stocks ordered by SCTR</h4>
+	
+<!--			<a href="{{ url_for('index', stockex = 'OMXSE') }}">OMXSE</a></td>
+			<a href="{{ url_for('index', stockex = 'OMXFI') }}">OMXFI</a></td>
+			<a href="{{ url_for('index', stockex = 'OMXNO') }}">OMXNO</a></td>
+			<a href="{{ url_for('index', stockex = 'NYSE') }}">NYSE</a></td> -->
+
+	<table class="table table-condensed">
+	<thead>
+		<th>Name</th>
+		<th>Stock Exchange</th>
+		<th>Cap</th>
+		<th>Medium term</th>
+		<th>SCTR</th>
+		<th>Money Wave</th>
+		<th>Price</th>
+		<th>Change</th>
+	</thead>
+	{% for row in stocklist.items %}
+		{% if row.moneywave < 20 %}
+		{% set buyAction  = "success" %}
+		{% elif row.moneywave > 80 %}
+		{% set buyAction = "danger" %}
+		{% else %}
+		{% set buyAction = "info" %}
+		{% endif %}
+		<tr class = {{ buyAction }}>
+			<td><a href="{{ url_for('grapher', ticker = row.ticker) }}">{{ row.name }}</a></td>
+			<td>{{  row.stock_exchange.name }}</td>
+			<td>{{  row.capmarket.name }}</td>
+			<td align="center">
+			{% if row.overEma50 %}
+				<img src="/static/img/arrow_up.gif" style = "width:20px;height:30px;">
+			{% else %}
+				<img src="/static/img/arrow_down.gif" style = "width:20px;height:30px;">
+			{% endif %}
+			</td>
+			<td>{{ '%0.2f' % row.average }}</td>
+			<td>{{ '%0.2f' % row.moneywave }}</td>
+			<td>{{ '%0.2f' % row.price }} {{ row.currency }}</td>
+			{% set priceChange = (((row.price/row.lastPrice)-1)*100) %}
+			<td>
+			{% if priceChange < 0 %}
+			<p class = "text-danger">
+			{% elif priceChange > 0 %}
+			<p class = "text-success">
+			{% else %}
+			<p>
+			{% endif %}
+			{{ '%0.2f' % priceChange }} %</p></td>
+		</tr>
+	{% endfor %}
+	</table>
+	<div class = "pagination">
+		{{ macros.pagination_widget(stocklist, "stocks") }}
+	</div>
+
+{% endblock %}
