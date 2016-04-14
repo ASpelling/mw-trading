@@ -10,14 +10,15 @@ from dateutil.relativedelta import relativedelta
 import numpy as np
 
 stockex = 'OMXSE'
-cap = 3
+cap = 1
 overviewList = 10
 
 @app.route('/')
 @app.route('/index')
 def index():
-	top = Company.query.filter(Company.average != None, Company.stockexchange_id == stockex, Company.capmarket_id != cap).order_by(Company.average.desc())[:overviewList]
-	flop = Company.query.filter(Company.average != None, Company.stockexchange_id == stockex, Company.capmarket_id != cap).order_by(Company.average.desc())[-1*overviewList:]
+	stocklist = Company.query.filter(Company.average != None, Company.stockexchange_id == stockex, Company.capmarket_id == cap).order_by(Company.average.desc())
+	top = stocklist[:overviewList]
+	flop = stocklist[-1*overviewList:]
 	indexes = Index.query.order_by(Index.average.desc()).all()
 
 	stocksAboveEma50 = (float(Company.query.filter(Company.average != None, Company.overEma50 == True, Company.stockexchange_id == stockex).count())/float(Company.query.filter(Company.average != None, Company.stockexchange_id == stockex).count()))*100
@@ -28,10 +29,15 @@ def index():
 @app.route('/stocks')
 @app.route('/stocks/<int:page>')
 def stocks(page=1):
-	stocklist = Company.query.filter(Company.average != None, Company.stockexchange_id == stockex, Company.capmarket_id != cap).order_by(Company.average.desc()).paginate(page, POST_PER_PAGE, False)
+	stocklist = Company.query.filter(Company.average != None, Company.stockexchange_id == stockex, Company.capmarket_id == cap).order_by(Company.average.desc()).paginate(page, POST_PER_PAGE, False)
 	indexes = Index.query.order_by(Index.average.desc()).all()
 	return render_template("stocks.html", title='Stocks', stocklist=stocklist, page=page, indexes=indexes)
 
+@app.route('/nonupdate')
+def nonupdate():
+	stocklist = Company.query.filter(Company.average == None)
+	indexes = Index.query.order_by(Index.average.desc()).all()
+	return render_template("nonupdate.html", title='No updated stocks', indexes = indexes, stocklist=stocklist)
 
 @app.route('/stockupdater')
 def stockupdater():
@@ -102,3 +108,4 @@ def not_found_error(error):
 def not_found_error(error):
 	db.session.rollback()
         return render_template('500.html'), 500
+

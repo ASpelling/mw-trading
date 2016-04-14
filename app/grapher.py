@@ -44,6 +44,7 @@ import talib as tb
 import pylab
 matplotlib.rcParams.update({'font.size': 9})
 from config import basedir
+from .update import updatingMoneyWave
 
 
 def rsiFunc(prices, n=14):
@@ -118,7 +119,7 @@ def graphData(stock, MA1 = 10,MA2 = 250):
             print str(e), 'failed to organize pulled data.'
     except Exception,e:
         print str(e), 'failed to pull pricing data'
-    try:   
+    try:
         date, closep, highp, lowp, openp, volume = np.loadtxt(stockFile,delimiter=',', unpack=True,
                                                               converters={ 0: mdates.strpdate2num('%Y%m%d')})
         x = 0
@@ -128,12 +129,12 @@ def graphData(stock, MA1 = 10,MA2 = 250):
             appendLine = date[x],openp[x],closep[x],highp[x],lowp[x],volume[x]
             newAr.append(appendLine)
             x+=1
-            
+
         Av1 = movingaverage(closep, MA1)
-	Av2 = ExpMovingAverage(closep, MA2)
+        Av2 = ExpMovingAverage(closep, MA2)
 
         SP = len(date[MA2-1:])
-            
+
         fig = plt.figure(facecolor='#07000d')
 
 # Plotting the main price graph
@@ -141,11 +142,11 @@ def graphData(stock, MA1 = 10,MA2 = 250):
         candlestick_ochl(ax1, newAr[-SP:], width=.6, colorup='#53c156', colordown='#ff1717')
 
         Label1 = 'SMA '+str(Av1[-1]) #+str(Av1[-1])
-#	Label2 = str(MA2)+' SMA'     #+str(Av2[-1])
+        Label2 = str("%.2f" % updatingMoneyWave(highp, lowp, closep, nextMWPrice = True))+' new Price'     #+str(Av2[-1])
 
         ax1.plot(date[-SP:],Av1[-SP:],'#e1edf9',label=Label1, linewidth=1.5)
-	ax1.plot(date[-SP:],Av2[-SP:],'#4ee6fd',linewidth=1.5)
-        
+        ax1.plot(date[-SP:],Av2[-SP:],'#4ee6fd',label=Label2, linewidth=1.5)
+
         ax1.grid(True, color='w')
         ax1.xaxis.set_major_locator(mticker.MaxNLocator(10))
         ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
@@ -166,14 +167,14 @@ def graphData(stock, MA1 = 10,MA2 = 250):
         pylab.setp(textEd[0:5], color = 'w')
 
         volumeMin = 0
-        
+
 # Plotting the upper RSI graph
-        ax0 = plt.subplot2grid((7,4), (0,0), sharex=ax1, rowspan=1, colspan=4, axisbg='#07000d')        
+        ax0 = plt.subplot2grid((7,4), (0,0), sharex=ax1, rowspan=1, colspan=4, axisbg='#07000d')
 	rsi = rsiFunc(closep)
         rsiCol = '#c1f9f7'
         posCol = '#386d13'
         negCol = '#8f2020'
-        
+
         ax0.plot(date[-SP:], rsi[-SP:], rsiCol, linewidth=1.5)
         ax0.axhline(70, color=negCol)
         ax0.axhline(30, color=posCol)
@@ -202,7 +203,7 @@ def graphData(stock, MA1 = 10,MA2 = 250):
         ax1v.tick_params(axis='x', colors='w')
         ax1v.tick_params(axis='y', colors='w')
 
-        
+
 # PLotting the lower Money wave graph
         ax2 = plt.subplot2grid((7,4), (5,0), sharex=ax1, rowspan=1, colspan=4, axisbg='#07000d')
 
@@ -210,7 +211,7 @@ def graphData(stock, MA1 = 10,MA2 = 250):
         # START NEW INDICATOR CODE #
 	# -- Money Wave -- #
 	slowk, slowd = tb.STOCH(highp, lowp, closep, fastk_period=5, slowk_period=3, slowk_matype=0, slowd_period=1, slowd_matype=0)
-        ax2.plot(date[-SP:], slowd[-SP:], rsiCol, label = 'MW '+str(slowd[-1]), linewidth=1.5)
+        ax2.plot(date[-SP:], slowd[-SP:], rsiCol, linewidth=1.5)
         ax2.axhline(80, color=negCol)
         ax2.axhline(20, color=posCol)
         ax2.fill_between(date[-SP:], slowd[-SP:], 80, where=(slowd[-SP:]>=80), facecolor=negCol, edgecolor=negCol, alpha=0.5)
@@ -218,7 +219,7 @@ def graphData(stock, MA1 = 10,MA2 = 250):
 
         # END NEW INDICATOR CODE #
 
-        
+
         plt.gca().yaxis.set_major_locator(mticker.MaxNLocator(prune='upper'))
         ax2.spines['bottom'].set_color("#5998ff")
         ax2.spines['top'].set_color("#5998ff")
@@ -256,7 +257,7 @@ def graphData(stock, MA1 = 10,MA2 = 250):
         ax3.yaxis.set_major_locator(mticker.MaxNLocator(nbins=5, prune='upper'))
         plt.ylabel('STOCH')
 
-        
+
         for label in ax3.xaxis.get_ticklabels():
             label.set_rotation(45)
 
@@ -266,7 +267,7 @@ def graphData(stock, MA1 = 10,MA2 = 250):
 
         plt.setp(ax0.get_xticklabels(), visible=False)
         plt.setp(ax1.get_xticklabels(), visible=False)
-        
+
         '''ax1.annotate('Big news!',(date[510],Av1[510]),
             xytext=(0.8, 0.9), textcoords='axes fraction',
             arrowprops=dict(facecolor='white', shrink=0.05),
@@ -280,7 +281,7 @@ def graphData(stock, MA1 = 10,MA2 = 250):
 	stockNameDate = stock.ticker+'.png'
 	filename = os.path.join(path, stockNameDate)
         fig.savefig(filename,facecolor=fig.get_facecolor())
-           
+
     except Exception,e:
         print 'main loop',str(e)
 
