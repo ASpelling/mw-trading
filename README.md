@@ -1,9 +1,12 @@
 # mw-trading
 ====
-Trading program "Buy expensive, sell more expensive"
+Trading program "Buy on momentum"
 
-Takes a pre-defined list, i.e. Nasdaq OMX, and ranks the stocks according to Relative strenght index (RSI)
-The top candidates and shows in the Money wave:
+Checks which assets, on a pre-defined list, are MW* < 20. These assets are put on a candidate list with a buy price, if the asset closes above this buy price it is a buy. When the assets after a trading day's close have MW > 20 a ML aglorithm ranks if it is a buy or not together with stopp loss and risk (but no reward). 
+
+This could also be used to sell short.
+
+Money wave:
 - under 20 get ready to buy
 - over 80 get ready to sell
 
@@ -12,22 +15,8 @@ Pulls the data from Yahoo! Finance
 Calculate predefined values used to define candidates with associated probability
 Shows the candidates as a webpage using Flask
 
+### Features
+- Asset indicators
+- Related assets/indexes indicators
 
-# Features
-* It could also filter the list according to
-  - Large-cap
-  - Mid-cap
-  - Small-cap
-  - Segment
-	- Basic materials
-	- Consumer goods
-	- Consumer services
-	- Finacials
-	- Health care
-	- Industrials
-	- Oil & Gas
-	- Technology
-	- Telecommunications
-* Shows the RSI for world indexes
-
-* In bear market shows a list of the weakest RSI
+*MW is the slow stochastics. 
