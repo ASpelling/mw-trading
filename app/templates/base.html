@@ -17,27 +17,28 @@
 	</head>
 	<body>
 		<div class="container-fluid">
-		  <nav class="navbar navbar-default">
+		    <nav class="navbar navbar-default navbar-inverse" role="navigation"> 
 		    <!-- Brand and toggle get grouped for better mobile display -->
 		    <div class="navbar-header">
-		      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+		      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigationbar">
 		        <span class="sr-only">Toggle navigation</span>
 		        <span class="icon-bar"></span>
 		        <span class="icon-bar"></span>
 		        <span class="icon-bar"></span>
 		      </button>
-		      <a class="navbar-brand" href="#">AS-Trading</a>
+		      <a class="navbar-brand" href="/">AS-Trading</a>
 		    </div>
 
 		    <!-- Collect the nav links, forms, and other content for toggling -->
-		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+		    <div class="navbar-collapse" id="navigationbar">
 		      <ul class="nav navbar-nav">
 			<li><a href="{{ url_for('index') }}">Overview</a></li>
 			<li><a href="{{ url_for('stocks') }}">Stocklist</a></li>
+			<li><a href="{{ url_for('nonupdate') }}">Not updated stocks</a></li>
 			<li><a href="{{ url_for('stockupdater') }}">Update stocklist</a></li>
 			<li><a href="{{ url_for('indexupdater') }}">Update indexlist</a></li>
 		      </ul>
-		    </div><!-- /.navbar-collapse -->
+	 	    </div>
 		</nav>
 
 		{% with messages = get_flashed_messages() %}

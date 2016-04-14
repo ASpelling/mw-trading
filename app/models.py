@@ -1,5 +1,7 @@
 from app import db
-import pandas.io.data as web
+from datetime import date
+from pandas.tseries.offsets import BDay
+import pandas_datareader.data as web
 from .update import updatingSCTR, updatingMoneyWave, updatingEMA50, updatingEMALTvsST
 
 class StockExchange(db.Model):
@@ -58,6 +60,11 @@ class Company(db.Model):
 	def update_all(self, startDate, endDate):
 		try:
                         daily = web.DataReader(self.ticker, 'yahoo', startDate, endDate)
+			readOutTime = daily.iloc[-1].name - (date.today() - BDay(1))
+			if readOutTime.days < 0:
+				self.average = None
+				db.session.commit()
+				raise Exception
 			adjClose = daily['Adj Close'].values
 			high = daily['High'].values
 			low = daily['Low'].values
@@ -99,13 +106,14 @@ class Index(db.Model):
                 try:
                         daily = web.DataReader(self.ticker, 'yahoo', startDate, endDate)
                         adjClose = daily['Adj Close'].values
+			close = daily['Close'].values
                         high = daily['High'].values
                         low = daily['Low'].values
 
                         self.price = adjClose[-1]
                         self.lastPrice = adjClose[-2]
                         self.average = updatingSCTR(adjClose)
-                        self.moneywave = updatingMoneyWave(high, low, adjClose)
+                        self.moneywave = updatingMoneyWave(high, low, close)
                         self.emaLTvsST = updatingEMALTvsST(daily)
 
                         db.session.commit()
